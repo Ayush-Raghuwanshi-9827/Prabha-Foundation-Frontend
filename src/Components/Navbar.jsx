@@ -49,13 +49,18 @@ export default function Navbar() {
         </div>
 
         {/* Right: Contact Button */}
-        <Link
-          to="/contact"
+        <button
+          onClick={() =>
+            window.open(
+              "https://docs.google.com/forms/d/e/1FAIpQLSfpokjh49QYgJzgvIf-mQATIam7pehn4G4uqGkh2xI5S-eGMg/viewform",
+              "_blank"
+            )
+          }
           className="ml-4 border border-green-600 text-green-700 px-5 py-2 rounded-md font-semibold 
-                     hover:bg-green-600 hover:text-white transition-all duration-300 shadow-sm"
+             hover:bg-green-600 hover:text-white transition-all duration-300 shadow-sm"
         >
           Contact
-        </Link>
+        </button>
       </div>
     </nav>
   );

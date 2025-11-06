@@ -1,9 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
-import Footer from "./Components/Footer"; // Create later
-
+import Footer from "./Components/Footer";
 import Home from "./Pages/Home";
-import Contact from "./Pages/Contact";
 import PrabhaFoundationCare from "./Pages/PrabhaFoundationCare";
 
 function App() {
@@ -18,7 +16,6 @@ function App() {
               path="/prabha-foundation-care"
               element={<PrabhaFoundationCare />}
             />
-            <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
         <Footer />

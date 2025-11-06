@@ -7,12 +7,18 @@ import card1 from "../assets/card-1.webp";
 import card2 from "../assets/card-2.webp";
 import { useNavigate } from "react-router-dom";
 import JoinUsSection from "../Components/JoinUsSection";
+import { useRef } from "react";
 
 export default function Home() {
   const navigate = useNavigate();
-
+  const initiativesRef = useRef(null);
   const handleDonateClick = () => {
     navigate("/prabha-foundation-care");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleViewServicesClick = () => {
+    initiativesRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const initiatives = [
@@ -34,7 +40,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="font-[Poppins] text-gray-800 overflow-x-hidden">
+    <div className=" text-gray-800 overflow-x-hidden">
       {/* 🌟 HERO SECTION */}
       <section
         className="relative w-full h-[90vh] bg-cover bg-center flex items-center justify-center md:justify-start px-6 md:px-16 lg:px-32"
@@ -65,6 +71,7 @@ export default function Home() {
           </motion.p>
 
           <motion.button
+            onClick={handleViewServicesClick}
             className="bg-green-500 hover:bg-green-700 text-white text-base md:text-lg font-semibold px-6 py-3 rounded-md shadow-lg transition duration-300"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -170,7 +177,10 @@ export default function Home() {
       </section>
 
       {/* 💫 INITIATIVE CARDS */}
-      <section className="py-24 bg-white flex flex-col items-center px-6 md:px-12 lg:px-20">
+      <section
+        ref={initiativesRef}
+        className="py-24 bg-white flex flex-col items-center px-6 md:px-12 lg:px-20"
+      >
         <motion.h2
           className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center"
           initial={{ opacity: 0, y: -20 }}
