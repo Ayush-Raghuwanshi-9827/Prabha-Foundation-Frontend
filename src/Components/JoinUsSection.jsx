@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import emailjs from "emailjs-com";
 
 export default function JoinUsSection() {
   const [form, setForm] = useState({
@@ -9,15 +10,90 @@ export default function JoinUsSection() {
     message: "",
   });
 
+  const [status, setStatus] = useState({
+    loading: false,
+    success: "",
+    error: "",
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
+  // ✅ Modern industry-grade validation
+  const validateForm = () => {
+    const { name, email, phone, message } = form;
+    const nameRegex = /^[a-zA-Z\s]{3,50}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      return "Please fill in all required fields.";
+    }
+    if (!nameRegex.test(name)) {
+      return "Name should contain only letters and be 3–50 characters long.";
+    }
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address.";
+    }
+    if (phone && !phoneRegex.test(phone)) {
+      return "Please enter a valid 10-digit phone number.";
+    }
+    if (message.length < 10) {
+      return "Message should be at least 10 characters long.";
+    }
+    return null;
+  };
+
+  // ✅ Auto-remove messages after 3 seconds
+  useEffect(() => {
+    if (status.error || status.success) {
+      const timer = setTimeout(() => {
+        setStatus((prev) => ({ ...prev, error: "", success: "" }));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [status.error, status.success]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);
-    alert("Thank you for reaching out! We'll contact you soon.");
+    setStatus({ loading: false, success: "", error: "" });
+
+    const validationError = validateForm();
+    if (validationError) {
+      setStatus({ loading: false, success: "", error: validationError });
+      return;
+    }
+
+    setStatus({ loading: true, success: "", error: "" });
+
+    console.log("Form: ", form);
+    // 🚀 Send email via EmailJS
+    emailjs
+      .send(
+        "service_s5orbbr", // 🔹 Replace this
+        "YOUR_TEMPLATE_ID", // 🔹 Replace this
+        form,
+        "cpCY5KhSb92mqZjfV" // 🔹 Replace this
+      )
+      .then(
+        () => {
+          setStatus({
+            loading: false,
+            success: "✅ Message sent successfully! We'll reach out soon.",
+            error: "",
+          });
+          setForm({ name: "", email: "", phone: "", message: "" });
+        },
+        () => {
+          setStatus({
+            loading: false,
+            success: "",
+            error: "❌ Failed to send message. Please try again later.",
+          });
+        }
+      );
   };
 
   return (
@@ -41,6 +117,17 @@ export default function JoinUsSection() {
             onSubmit={handleSubmit}
             className="space-y-6 bg-white p-8 rounded-2xl shadow-md"
           >
+            {status.error && (
+              <p className="text-red-600 bg-red-50 border border-red-200 p-2 rounded-md text-sm">
+                {status.error}
+              </p>
+            )}
+            {status.success && (
+              <p className="text-green-600 bg-green-50 border border-green-200 p-2 rounded-md text-sm">
+                {status.success}
+              </p>
+            )}
+
             <div>
               <label className="block text-gray-700 font-semibold mb-2">
                 Name <span className="text-red-500">*</span>
@@ -50,8 +137,7 @@ export default function JoinUsSection() {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                required
-                placeholder="Enter your name"
+                placeholder="Enter your full name"
                 className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
@@ -65,29 +151,28 @@ export default function JoinUsSection() {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                required
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
                 className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
             <div>
               <label className="block text-gray-700 font-semibold mb-2">
-                Phone number
+                Phone number (optional)
               </label>
               <input
                 type="tel"
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="Enter your phone number"
+                placeholder="Enter your 10-digit phone number"
                 className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
             <div>
               <label className="block text-gray-700 font-semibold mb-2">
-                Message
+                Message <span className="text-red-500">*</span>
               </label>
               <textarea
                 name="message"
@@ -103,14 +188,17 @@ export default function JoinUsSection() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-md shadow-lg transition-all duration-300"
+              disabled={status.loading}
+              className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-md shadow-lg transition-all duration-300 ${
+                status.loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Submit
+              {status.loading ? "Sending..." : "Send Message"}
             </motion.button>
           </form>
         </motion.div>
 
-        {/* Right Side - Map & Contact Info */}
+        {/* Right Side - Map & Info */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -119,18 +207,15 @@ export default function JoinUsSection() {
           className="bg-white rounded-2xl shadow-md overflow-hidden"
         >
           <div className="w-full h-[60vh] overflow-hidden">
-            <div className="w-full h-[600px] rounded-2xl overflow-hidden shadow-lg">
-              <iframe
-                title="Prabha Foundation Location - Bhopal"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3674.997935197818!2d77.4226720749912!3d23.248247279017894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c693c8f2c2c31%3A0x8df1f1f1c42bdb53!2sSubhash%20Colony%2C%20Bhopal%2C%20Madhya%20Pradesh%20462001!5e0!3m2!1sen!2sin!4v1730905500000!5m2!1sen!2sin"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
+            <iframe
+              title="Prabha Foundation Location - Bhopal"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3674.997935197818!2d77.4226720749912!3d23.248247279017894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c693c8f2c2c31%3A0x8df1f1f1c42bdb53!2sSubhash%20Colony%2C%20Bhopal%2C%20Madhya%20Pradesh%20462001!5e0!3m2!1sen!2sin!4v1730905500000!5m2!1sen!2sin"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+            ></iframe>
           </div>
           <div className="p-6 space-y-4">
             <h3 className="text-lg font-bold text-gray-900 uppercase">
