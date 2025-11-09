@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import emailjs from "emailjs-com";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase";
 
 export default function JoinUsSection() {
   const [form, setForm] = useState({
@@ -56,9 +57,9 @@ export default function JoinUsSection() {
     }
   }, [status.error, status.success]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus({ loading: false, success: "", error: "" });
+    setStatus({ loading: true, success: "", error: "" });
 
     const validationError = validateForm();
     if (validationError) {
@@ -66,34 +67,28 @@ export default function JoinUsSection() {
       return;
     }
 
-    setStatus({ loading: true, success: "", error: "" });
+    try {
+      // ✅ Store form data in Firestore
+      await addDoc(collection(db, "joinUsFormData"), {
+        ...form,
+        timestamp: new Date(),
+      });
 
-    console.log("Form: ", form);
-    // 🚀 Send email via EmailJS
-    emailjs
-      .send(
-        "service_s5orbbr", // 🔹 Replace this
-        "YOUR_TEMPLATE_ID", // 🔹 Replace this
-        form,
-        "cpCY5KhSb92mqZjfV" // 🔹 Replace this
-      )
-      .then(
-        () => {
-          setStatus({
-            loading: false,
-            success: "✅ Message sent successfully! We'll reach out soon.",
-            error: "",
-          });
-          setForm({ name: "", email: "", phone: "", message: "" });
-        },
-        () => {
-          setStatus({
-            loading: false,
-            success: "",
-            error: "❌ Failed to send message. Please try again later.",
-          });
-        }
-      );
+      setStatus({
+        loading: false,
+        success: "✅ Message sent successfully! We'll reach out soon.",
+        error: "",
+      });
+
+      setForm({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      console.error("Error adding document:", error);
+      setStatus({
+        loading: false,
+        success: "",
+        error: "Something went wrong. Please try again later.",
+      });
+    }
   };
 
   return (
@@ -208,14 +203,14 @@ export default function JoinUsSection() {
         >
           <div className="w-full h-[60vh] overflow-hidden">
             <iframe
-              title="Prabha Foundation Location - Bhopal"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3674.997935197818!2d77.4226720749912!3d23.248247279017894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c693c8f2c2c31%3A0x8df1f1f1c42bdb53!2sSubhash%20Colony%2C%20Bhopal%2C%20Madhya%20Pradesh%20462001!5e0!3m2!1sen!2sin!4v1730905500000!5m2!1sen!2sin"
+              title="Prabha Foundation Location - Shahpura Bhopal"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3683.3144262578095!2d77.41268477497774!3d23.19279017906296!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c69008b97a891%3A0x3b4b0283734e87a0!2sManisha%20Market%2C%20BDA%20Complex%2C%20Shahpura%2C%20Bhopal%2C%20Madhya%20Pradesh%20462016!5e0!3m2!1sen!2sin!4v1730910000000!5m2!1sen!2sin"
               width="100%"
               height="100%"
               style={{ border: 0 }}
-              allowFullScreen=""
+              allowFullScreen
               loading="lazy"
-            ></iframe>
+            />
           </div>
           <div className="p-6 space-y-4">
             <h3 className="text-lg font-bold text-gray-900 uppercase">
@@ -224,10 +219,10 @@ export default function JoinUsSection() {
             <div className="flex items-center gap-2 text-gray-700">
               <span className="text-green-600">📧</span>
               <a
-                href="mailto:remzyfoundation01@gmail.com"
+                href="mailto:Prabhafoundation11@gmail.com"
                 className="text-green-700 hover:underline"
               >
-                remzyfoundation01@gmail.com
+                Prabhafoundation11@gmail.com
               </a>
             </div>
             <div>
@@ -235,7 +230,8 @@ export default function JoinUsSection() {
                 Location
               </h4>
               <p className="text-gray-600 leading-relaxed">
-                Sourabh Colony, JK Road, Bhopal, Madhya Pradesh, India
+                h/o: Jrm 34, Second floor bda complex, Manisha market shahpura,
+                Bhopal M.P
               </p>
             </div>
           </div>

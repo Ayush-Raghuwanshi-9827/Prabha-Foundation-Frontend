@@ -28,7 +28,7 @@ export default function Footer() {
           <img
             src={logo}
             alt="Logo"
-            className="h-48 w-48 object-contain rounded-full shadow-md"
+            className="h-44 w-44 object-contain rounded-full shadow-md"
           />
         </div>
 
@@ -36,7 +36,10 @@ export default function Footer() {
         <div className="flex flex-col text-center md:text-left space-y-4">
           <div>
             <h3 className="text-2xl font-bold text-white mb-1">Reach out</h3>
-            <p className="text-gray-100 text-lg">remzyfoundation01@gmail.com</p>
+            <p className="text-gray-100 text-lg">
+              {" "}
+              Prabhafoundation11@gmail.com
+            </p>
           </div>
 
           <div className="flex justify-center md:justify-start space-x-8 text-2xl">
@@ -67,11 +70,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="">
+        <div className="pb-4">
           <h3 className="text-2xl font-bold text-white ">Location</h3>
           <p className="text-gray-100 text-base leading-snug max-w-[250px] pt-2">
-            SOURABH COLONY CHANDBAD, JK Road, Bhopal, MADHYA PRADESH 462010,
-            India
+            h/o: Jrm 34, Second floor bda complex, Manisha market shahpura, Bhopal M.P
           </p>
         </div>
 
@@ -90,7 +92,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-700 text-center py-4 text-sm text-gray-400">
-        © {new Date().getFullYear()} Gyandeep Foundation. All rights reserved.
+        © {new Date().getFullYear()} Prabha Foundation. All rights reserved.
       </div>
 
       {/* Scroll to Top Button */}
